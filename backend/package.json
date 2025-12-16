@@ -2,7 +2,7 @@
     "name": "venturemond-backend",
     "version": "1.0.0",
     "engines": {
-        "node": "18.x"
+        "node": "24.x"
     },
     "description": "Backend for VentureMond Client Dashboard",
     "main": "src/index.js",
