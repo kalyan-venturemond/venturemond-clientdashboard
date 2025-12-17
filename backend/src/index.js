@@ -17,12 +17,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(morgan('dev'));
 
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+];
+
 app.use(
     cors({
-        origin: true,
+        origin: function (origin, callback) {
+            // Allow server-to-server and same-origin requests
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            } else {
+                return callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
+
+// Explicit preflight handling
+app.options("*", cors());
 
 // Basic Rate Limiter to prevent brute force
 const limiter = rateLimit({
