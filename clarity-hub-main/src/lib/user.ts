@@ -7,7 +7,8 @@ export const userService = {
         return response.data.user;
     },
 
-    updateMe: async (profile: {
+    updateMe: async (data: {
+        name?: string;
         companyName?: string;
         companySize?: string;
         phone?: string;
@@ -17,10 +18,18 @@ export const userService = {
         timezone?: string;
     }) => {
         const token = localStorage.getItem('token');
-        console.log("userService.updateMe calling...", { tokenExists: !!token, tokenPreview: token ? token.substring(0, 10) : 'N/A' });
+        console.log("userService.updateMe calling...", { tokenExists: !!token });
 
         try {
-            const response = await API.patch('/users/me', { profile });
+            // Split name from profile data
+            const { name, ...profileData } = data;
+            
+            // Construct payload: if name exists, include it at root. Profile data goes into 'profile' object.
+            const payload: any = {};
+            if (name) payload.name = name;
+            if (Object.keys(profileData).length > 0) payload.profile = profileData;
+
+            const response = await API.patch('/users/me', payload);
             return response.data.user;
         } catch (error) {
             console.error("userService.updateMe failed", error);
