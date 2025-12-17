@@ -13,27 +13,16 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(morgan('dev'));
 
-// CORS configuration - allow dev frontend origin(s)
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-const allowedOrigins = [clientUrl, 'http://localhost:8080'];
-
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true); // allow server-to-server or curl
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            return callback(null, true);
-        }
-        return callback(new Error('CORS: Not allowed by CORS - ' + origin));
-    },
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-}));
-
-console.log('Allowed CORS origins:', allowedOrigins.join(', '));
+app.use(
+    cors({
+        origin: true,
+        credentials: true,
+    })
+);
 
 // Basic Rate Limiter to prevent brute force
 const limiter = rateLimit({
@@ -73,3 +62,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 module.exports = app;
+
+app.use((err, req, res, next) => {
+    console.error("Server error:", err);
+    res.status(500).json({ message: "Internal server error" });
+});
