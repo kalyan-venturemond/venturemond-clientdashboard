@@ -278,19 +278,47 @@ export function CompareModal({
                                 <TableRow key={i}>
                                     <TableCell className="font-medium">{feature}</TableCell>
                                     {tiers.map(t => {
-                                        // Simplified Mock Logic for filling table
-                                        // In production, map this from t.features or t.sla/deliverables
+                                        const title = t.title.toLowerCase();
                                         let content: React.ReactNode = <MinusIcon />;
 
                                         if (feature === "Support SLA") {
-                                            content = <span className="text-xs">{t.sla || "N/A"}</span>;
-                                        } else if (feature === "Deliverables") {
-                                            content = <span className="text-xs truncate max-w-[150px]" title={t.deliverables?.join(", ")}>{t.deliverables?.length ?? 0} items</span>
-                                        } else {
-                                            const hasFeature =
-                                                (t.id.includes("tier-1") && i < 4) ||
-                                                (t.id.includes("tier-2") && i < 6) ||
-                                                (t.id.includes("tier-3"));
+                                            if (title.includes("basic")) content = <span className="text-xs font-medium">3 Months</span>;
+                                            else if (title.includes("pro mvp")) content = <span className="text-xs font-medium">6 Months</span>;
+                                            else if (title.includes("enterprise")) content = <span className="text-xs font-medium">12 Months</span>;
+                                            else content = <span className="text-muted-foreground/50 text-[10px]">N/A</span>;
+                                        }
+                                        else if (feature === "Deliverables") {
+                                            if (title.includes("basic")) content = <span className="text-xs">Turnkey MVP</span>;
+                                            else if (title.includes("pro mvp")) content = <span className="text-xs">MVP + Admin</span>;
+                                            else if (title.includes("enterprise")) content = <span className="text-xs">Full Platform</span>;
+                                            else if (title.includes("roadmap")) content = <span className="text-xs">PDF Report</span>;
+                                            else if (title.includes("tech")) content = <span className="text-xs">Audit Report</span>;
+                                            else content = <span className="text-xs">Strategy Doc</span>;
+                                        }
+                                        else {
+                                            let hasFeature = false;
+
+                                            switch (feature) {
+                                                case "Product Strategy":
+                                                    hasFeature = title.includes("mvp") || title.includes("product") || title.includes("growth");
+                                                    break;
+                                                case "UI/UX Design":
+                                                    hasFeature = title.includes("mvp");
+                                                    break;
+                                                case "Full Stack Dev":
+                                                    hasFeature = title.includes("mvp");
+                                                    break;
+                                                case "Cloud Deployment":
+                                                    hasFeature = title.includes("mvp");
+                                                    break;
+                                                case "Scalable Arch":
+                                                    hasFeature = title.includes("pro") || title.includes("enterprise") || title.includes("tech");
+                                                    break;
+                                                case "Microservices":
+                                                    hasFeature = title.includes("enterprise");
+                                                    break;
+                                            }
+
                                             content = hasFeature ? <Check className="h-5 w-5 text-primary mx-auto" /> : <MinusIcon />;
                                         }
 
