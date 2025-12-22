@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // Backend URL for downloads (assuming dev env, ideally get from env)
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
 
 export default function Files() {
   const [view, setView] = useState<"grid" | "list">("grid");
